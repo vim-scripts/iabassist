@@ -1,0 +1,38 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2687
+
+There are a ton of existing abbreviation packages, but none were quite right.  This one provides some unique features:
+1. Doesn't expand the abbreviation in specified areas
+2. Doesn't expand the abbreviation unless a tab was pressed
+3. Placeholder will not compile in most languages
+4. Includes mappings to quickly select the next placeholder, accept defaults, or delete current placeholder.
+
+Usage:
+    Exports:
+        Eatchar() - removes any trailing spaces from abbreviations
+        ExpandIfSafe(from, to) - expands a:from to a:to if not in a specified block (strings, comments, character, doxygen, bibbrace currently)
+        Iab(ab, full) - define an abbreviation from a:ab to a:full which expands if safe
+        IabSelectNext - Finds the next placeholder and selects it
+        IabSelectDefault - Selects the default option
+    Maps:
+        ,, - Select the next placeholder
+        ,' - Select the default for the current placeholder
+        ,. - Delete the current placeholder
+    Example:
+        Iab('for', 'for(«$1:unsigned i = 0»; «$2:i < «$3»»; «$4:++i»)<CR>{<CR>«$5»<CR>}')
+        will define an abbreviation for for.  Now typing for<TAB> will expand to:
+        for(«$1:unsigned i = 0»; «$2:i < «$3»»; «$4:++i»)
+        {
+            «$5»
+        }
+        with «$1:unsigned i = 0» being selected.  Now typing ,' will change it to unsigned i = 0; and select the $2 branch (Note the numbers are not traversed in order, but instead are merely for marking placeholders.  In a future version this may change).  As it is in select mode typing any character will replace the placeholder.  If a placeholder is unwanted one can press ,., and to traverse use ,,.
+
+        Finally, note that abbreviations only expand if the last key was a tab, this ensures typing for<SPACE> will not expand.
+
+Customization:
+    At the moment the only customization is via source modification.  The most likely lines to be modified are: 1) 89-96 to change the mappings, and 2) 44 to change what are the unsafe syntax and what character is used for expansion (currently this must be a non-control character).
+
+Alternatives:
+    snippetsEmu - vimscript #1318
+    snipMate - vimscript #2540
+    code-snippet - vimscript #2086
+    The first two do much more than this, and I had issues with both, e.g. they seemed to have troubles when inserting a snippet inside the middle of a snippet.  The latter is more like this, but differs in its behavior, namely they use the (very neat) trick of mapping a special key (<S-CR>) to execute the expansion, instead this script uses the (also hopefully neat) trick of checking the last character entered and only expanding when the last character is a tab.
