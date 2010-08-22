@@ -2,15 +2,15 @@
 " File: iabassist.vim
 " Author: batman900 <batman900+vim@gmail.com>
 " Last Change: 22-Jun-2009.
-" Version: 0.01
+" Version: 0.02
 " Usage:
 "
 "	:Iab("lhs", "rhs")
 "	then lhs<Tab> to expand to rhs
 "
-"	;; select next placeholder
-"	;' set default for the current placeholder
-"	;. delete the current placeholder
+"	,, select next placeholder
+"	,' set default for the current placeholder
+"	,. delete the current placeholder
 "
 
 " Do not load more than once, but allow the user to force reloading if deisred
@@ -29,7 +29,6 @@ endfunction
 function! s:SyntaxAtCursor()
 	return synIDattr(synIDtrans(synID(line("."), col(".")-1, 1)), "name")
 endfunction
-
 
 " Replace abbreviation if we're not in comment or other unwanted places
 " from http://vim.wikia.com/wiki/C/C%2B%2B_function_abbreviations
@@ -58,39 +57,36 @@ function! Iab(ab, full)
 		\ "')<CR>"
 endfunction
 
-" Select the next <<$3>> item
+" Select the next «$i» item
 function! IabSelectNext()
 	let curl = line(".")
 	let curc = col(".")
 	call searchpair('«', '', '»')
-	let endl = line(".")
-	let endc = col(".")
+	"let endl = line(".")
+	"let endc = col(".")
 	normal! m'
 	call cursor(curl, curc)
-	normal! v``
-	normal! l
+	normal! v``l
 endfunction
 
 function! IabSelectDefault()
 	let curl = line(".")
 	let curc = col(".")
 	call searchpair('«', '', '»')
-	let endl = line(".")
-	let endc = col(".")
-	normal! x
+	normal! "_x
 	call cursor(curl, curc)
-	normal! df:
+	normal! "_df:
 endfunction
 
-" Newer version for the templates, allows default values (accepting with ;',
-" and searching with ;;)
+" Newer version for the templates, allows default values (accepting with ,',
+" and searching with ,,)
 
 " Accept the default and select the next placeholder
-smap <silent> ;' <ESC>`<:call IabSelectDefault()<CR>/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
+smap <silent> ,' <ESC>`<:call IabSelectDefault()<CR>/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
 
 " Deltete the currently selected item, and select the next placeholder
-smap <silent> ;. <C-G>"_d/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
+smap <silent> ,. <C-G>"_d/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
 
 " Select the next placeholder
-map <silent> ;; /«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
-imap <silent> ;; <ESC>/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
+map <silent> ,, /«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
+imap <silent> ,, <ESC>/«\$\d\+[^»]*»<CR>:nohlsearch<CR>:call IabSelectNext()<CR><C-G>
